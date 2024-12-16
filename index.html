@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Scientific Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      width: 500px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .display {
+      width: 100%;
+      height: 60px;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: right;
+      background-color: #f9f9f9;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button.function {
+      background-color: #17a2b8;
+    }
+    button.clear {
+      background-color: #dc3545;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .secondary-page {
+      display: none;
+    }
+    .secondary-page.active {
+      display: block;
+    }
+    .history {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <input type="text" id="display" class="display" readonly>
+    <div class="buttons">
+      <button onclick="append('9')">9</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('7')">7</button>
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('4')">4</button>
+      <button onclick="erase()">Erase</button>
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="calculate()">=</button>
+      <button style="grid-column: span 2;" onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="append('+')">+</button>
+      <button onclick="append('-')">−</button>
+      <button onclick="append('*')">×</button>
+      <button onclick="append('/')">÷</button>
+      <button onclick="append('^')">^</button>
+      <button onclick="append(',')">,</button> <!-- Comma -->
+      <button class="function" onclick="setFunction('log')">log</button>
+      <button class="function" onclick="setFunction('ln')">ln</button>
+      <button class="function" onclick="setFunction('sqrt')">√</button>
+      <button class="function" onclick="setFunction('sin')">sin</button>
+      <button class="function" onclick="setFunction('cos')">cos</button>
+      <button class="function" onclick="setFunction('tan')">tan</button>
+      <button class="function" onclick="setFunction('nPr')">nPr</button>
+      <button class="function" onclick="setFunction('nCr')">nCr</button>
+      <button class="function" onclick="solveQuadratic()">Quad</button>
+      <button onclick="switchPage()">Switch Page</button>
+    </div>
+    <div class="history" id="history">
+      <strong>History:</strong>
+      <div id="historyContent"></div>
+      <button onclick="clearHistory()">Clear History</button>
+    </div>
+  </div>
+  <div id="secondaryPage" class="secondary-page">
+    <h3>Unit Conversion and Extra Features</h3>
+    <div>
+      <label>Pressure Conversion:</label>
+      <input type="number" id="pressureInput" placeholder="Enter value in Pa">
+      <button onclick="convertPressure()">Convert</button>
+      <div id="pressureResult"></div>
+    </div>
+    <div>
+      <label>Currency Conversion:</label>
+      <select id="currencyFrom">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="INR">INR</option>
+        <option value="GBP">GBP</option>
+        <option value="AUD">AUD</option>
+        <option value="CAD">CAD</option>
+      </select>
+      to
+      <select id="currencyTo">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="INR">INR</option>
+        <option value="GBP">GBP</option>
+        <option value="AUD">AUD</option>
+        <option value="CAD">CAD</option>
+      </select>
+      <input type="number" id="currencyInput" placeholder="Enter amount">
+      <button onclick="convertCurrency()">Convert</button>
+      <div id="currencyResult"></div>
+    </div>
+  </div>
+  <script>
+    let currentFunction = null;
+    const display = document.getElementById('display');
+    const historyContent = document.getElementById('historyContent');
+
+    function append(value) {
+      display.value += value;
+    }
+
+    function clearDisplay() {
+      display.value = '';
+      currentFunction = null;
+    }
+
+    function erase() {
+      display.value = display.value.slice(0, -1);
+    }
+
+    function setFunction(func) {
+      currentFunction = func;
+      display.value = `${func}(`;
+    }
+
+    function calculate() {
+      try {
+        let result;
+        if (currentFunction) {
+          const input = display.value.replace(`${currentFunction}(`, '').replace(')', '');
+          if (currentFunction === 'sin') result = math.sin(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'cos') result = math.cos(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'tan') result = math.tan(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'log') result = math.log10(parseFloat(input));
+          else if (currentFunction === 'ln') result = math.log(parseFloat(input));
+          else if (currentFunction === 'sqrt') result = math.sqrt(parseFloat(input));
+          else if (currentFunction === 'nPr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / math.factorial(n - r);
+          } else if (currentFunction === 'nCr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / (math.factorial(r) * math.factorial(n - r));
+          }
+          saveToHistory(`${currentFunction}(${input}) = ${result.toFixed(4)}`);
+          display.value = result.toFixed(4);
+          currentFunction = null;
+        } else {
+          result = math.evaluate(display.value);
+          saveToHistory(`${display.value} = ${result}`);
+          display.value = result;
+        }
+      } catch {
+        display.value = 'Error';
+      }
+    }
+
+    function solveQuadratic() {
+      const coeffs = display.value.split(',').map(Number);
+      const [a, b, c] = coeffs;
+      const d = b ** 2 - 4 * a * c;
+      if (d < 0) {
+        display.value = 'Imaginary Roots';
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = Imaginary Roots`);
+      } else {
+        const r1 = (-b + Math.sqrt(d)) / (2 * a);
+        const r2 = (-b - Math.sqrt(d)) / (2 * a);
+        const result = `Roots: ${r1.toFixed(2)}, ${r2.toFixed(2)}`;
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = ${result}`);
+        display.value = result;
+      }
+    }
+
+    function switchPage() {
+      document.getElementById('secondaryPage').classList.toggle('active');
+    }
+
+    function saveToHistory(entry) {
+      const div = document.createElement('div');
+      div.textContent = entry;
+      historyContent.appendChild(div);
+    }
+
+    function clearHistory() {
+      historyContent.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
