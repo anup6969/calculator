@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Calculator with Multiple Pages</title>
+  <title>Enhanced Scientific Calculator with Currency Exchange</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
   <style>
     body {
@@ -21,13 +21,24 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
+    .display {
+      width: 100%;
+      height: 60px;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: right;
+      background-color: #f9f9f9;
     }
-    .buttons button {
-      padding: 10px 20px;
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 12px;
       font-size: 1rem;
       border: none;
       border-radius: 5px;
@@ -36,88 +47,130 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    .buttons button:hover {
+    button:hover {
       background-color: #0056b3;
     }
-    .content-page {
+    .secondary-page {
       display: none;
     }
-    .content-page.active {
+    .secondary-page.active {
       display: block;
     }
     footer {
       margin-top: 20px;
       text-align: center;
     }
-    footer a {
-      color: #007BFF;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="calculatorPage" class="content-page active">
-      <h2>Enhanced Calculator</h2>
-      <!-- Add calculator features here (refer to previous code) -->
-      <button onclick="switchPage('currencyPage')">Currency Exchange</button>
-    </div>
-
-    <div id="currencyPage" class="content-page">
-      <h2>Currency Exchange</h2>
-      <!-- Add currency exchange features here (refer to previous code) -->
-      <button onclick="switchPage('calculatorPage')">Back to Calculator</button>
-    </div>
-
-    <div id="aboutPage" class="content-page">
-      <h2>About Us</h2>
-      <p>Welcome to our enhanced scientific calculator website! Our mission is to make advanced calculations and currency exchanges simple, reliable, and accessible to everyone. Whether you’re a student, professional, or enthusiast, this tool is designed to meet your needs with powerful features and user-friendly functionality.</p>
-      <button onclick="switchPage('calculatorPage')">Back to Calculator</button>
-    </div>
-
-    <div id="contactPage" class="content-page">
-      <h2>Contact Us</h2>
-      <p>If you have any questions, feedback, or suggestions, feel free to reach out to us via email:</p>
-      <p><strong>Email:</strong> <a href="mailto:financeblog760@gmail.com">financeblog760@gmail.com</a></p>
-      <button onclick="switchPage('calculatorPage')">Back to Calculator</button>
-    </div>
-
-    <div id="termsPage" class="content-page">
-      <h2>Terms and Conditions</h2>
-      <p>By using this website, you agree to the following terms and conditions:</p>
-      <ul>
-        <li>All calculations are provided as is, and we do not guarantee their accuracy for professional use.</li>
-        <li>You are responsible for ensuring the results meet your requirements.</li>
-        <li>Currency exchange rates may vary, and real-time accuracy cannot be guaranteed.</li>
-      </ul>
-      <button onclick="switchPage('calculatorPage')">Back to Calculator</button>
-    </div>
-
-    <div id="privacyPage" class="content-page">
-      <h2>Privacy Policy</h2>
-      <p>Your privacy is important to us. This website does not store or share your personal data. Any data entered (e.g., calculations) is processed locally and not transmitted to any external servers.</p>
-      <button onclick="switchPage('calculatorPage')">Back to Calculator</button>
+  <div class="container primary-page">
+    <h2>Scientific Calculator</h2>
+    <input type="text" id="display" class="display" readonly>
+    <div class="buttons">
+      <button onclick="append('9')">9</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('7')">7</button>
+      <button onclick="clearDisplay()">C</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('4')">4</button>
+      <button onclick="erase()">Erase</button>
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="calculate()">=</button>
+      <button style="grid-column: span 2;" onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="append('+')">+</button>
+      <button onclick="switchPage()">Switch to Currency Exchange</button>
     </div>
   </div>
 
-  <footer>
-    <div class="buttons">
-      <button onclick="switchPage('aboutPage')">About Us</button>
-      <button onclick="switchPage('contactPage')">Contact Us</button>
-      <button onclick="switchPage('termsPage')">Terms and Conditions</button>
-      <button onclick="switchPage('privacyPage')">Privacy Policy</button>
+  <div class="container secondary-page" id="currencyExchangePage">
+    <h2>Currency Exchange</h2>
+    <div>
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" placeholder="Enter amount">
     </div>
+    <div>
+      <label for="fromCurrency">From:</label>
+      <select id="fromCurrency">
+        <option value="INR">Indian Rupee (INR)</option>
+        <option value="USD">US Dollar (USD)</option>
+        <option value="BDT">Bangladeshi Taka (BDT)</option>
+      </select>
+    </div>
+    <div>
+      <label for="toCurrency">To:</label>
+      <select id="toCurrency">
+        <option value="USD">US Dollar (USD)</option>
+        <option value="INR">Indian Rupee (INR)</option>
+        <option value="BDT">Bangladeshi Taka (BDT)</option>
+      </select>
+    </div>
+    <button onclick="convertCurrency()">Convert</button>
+    <div id="conversionResult" style="margin-top: 20px; font-size: 1.2rem;"></div>
+    <button onclick="switchPage()">Switch to Calculator</button>
+  </div>
+
+  <footer>
     <p>&copy; 2025 Enhanced Calculator. All rights reserved.</p>
   </footer>
 
   <script>
-    function switchPage(pageId) {
-      const pages = document.querySelectorAll('.content-page');
-      pages.forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
+    function append(value) {
+      document.getElementById('display').value += value;
+    }
+
+    function clearDisplay() {
+      document.getElementById('display').value = '';
+    }
+
+    function erase() {
+      const display = document.getElementById('display');
+      display.value = display.value.slice(0, -1);
+    }
+
+    function calculate() {
+      try {
+        const display = document.getElementById('display');
+        const result = math.evaluate(display.value);
+        display.value = result;
+      } catch {
+        document.getElementById('display').value = 'Error';
+      }
+    }
+
+    function switchPage() {
+      document.querySelector('.primary-page').classList.toggle('active');
+      document.getElementById('currencyExchangePage').classList.toggle('active');
+    }
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const fromCurrency = document.getElementById('fromCurrency').value;
+      const toCurrency = document.getElementById('toCurrency').value;
+
+      // Sample exchange rates
+      const rates = {
+        INR: { USD: 0.012, BDT: 1.17 },
+        USD: { INR: 82.74, BDT: 99.5 },
+        BDT: { INR: 0.85, USD: 0.01 },
+      };
+
+      if (isNaN(amount) || amount <= 0) {
+        document.getElementById('conversionResult').textContent = 'Enter a valid amount.';
+        return;
+      }
+
+      if (fromCurrency === toCurrency) {
+        document.getElementById('conversionResult').textContent = 'Select different currencies.';
+        return;
+      }
+
+      const rate = rates[fromCurrency][toCurrency];
+      const convertedAmount = (amount * rate).toFixed(2);
+      document.getElementById('conversionResult').textContent = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
     }
   </script>
 </body>
