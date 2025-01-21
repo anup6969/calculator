@@ -122,6 +122,9 @@
       <button class="function" onclick="setFunction('sin')">sin</button>
       <button class="function" onclick="setFunction('cos')">cos</button>
       <button class="function" onclick="setFunction('tan')">tan</button>
+      <button class="function" onclick="setFunction('nPr')">nPr</button>
+      <button class="function" onclick="setFunction('nCr')">nCr</button>
+      <button class="function" onclick="solveQuadratic()">Quad</button>
       <button onclick="switchPage()">Switch to Currency Exchange</button>
     </div>
     <div class="history" id="history">
@@ -202,7 +205,30 @@
     }
 
     function setFunction(func) {
-      display.value += func + "(";
+      if (func === "nPr" || func === "nCr") {
+        display.value += func + "(";
+      } else {
+        display.value += func + "(";
+      }
+    }
+
+    function solveQuadratic() {
+      let coefficients = prompt("Enter coefficients a, b, c separated by commas (e.g., 1, -3, 2):");
+      let [a, b, c] = coefficients.split(",").map(Number);
+      let discriminant = b ** 2 - 4 * a * c;
+      let solutions;
+      if (discriminant > 0) {
+        let root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+        let root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+        solutions = `Roots: ${root1}, ${root2}`;
+      } else if (discriminant === 0) {
+        let root = -b / (2 * a);
+        solutions = `Root: ${root}`;
+      } else {
+        solutions = "No real roots.";
+      }
+      alert(solutions);
+      addToHistory(`Quadratic: ${a}x² + ${b}x + ${c} = 0 → ${solutions}`);
     }
 
     function switchPage() {
