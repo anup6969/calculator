@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Calculator with Currency Exchange</title>
+  <title>Enhanced Scientific Calculator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
   <style>
     body {
@@ -13,15 +13,17 @@
       flex-direction: column;
       align-items: center;
       margin: 0;
+      padding: 10px; /* Added padding to avoid overflow */
+      box-sizing: border-box;
     }
     .container {
-      width: 90%;
-      max-width: 500px;
+      width: 100%; /* Use full width of the screen */
+      max-width: 500px; /* Limit to 500px max */
       background: #ffffff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      box-sizing: border-box;
+      box-sizing: border-box; /* Ensures padding does not overflow */
     }
     .display {
       width: 100%;
@@ -76,32 +78,25 @@
       margin-top: 20px;
       text-align: center;
     }
-    footer a {
-      color: #007BFF;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
+
+    /* Media Query for Smaller Screens */
     @media (max-width: 768px) {
       .container {
-        width: 95%;
-        padding: 15px;
+        width: 90%; /* Take up 90% of the screen width */
+        padding: 15px; /* Slightly reduced padding */
       }
       button {
         padding: 10px;
-        font-size: 0.9rem;
+        font-size: 0.9rem; /* Slightly smaller button size */
       }
       .display {
-        font-size: 1.2rem;
+        font-size: 1.2rem; /* Smaller font for the display */
       }
     }
   </style>
 </head>
 <body>
-  <!-- Calculator Page -->
-  <div class="container primary-page" id="calculatorPage">
-    <h2>Scientific Calculator</h2>
+  <div class="container">
     <input type="text" id="display" class="display" readonly>
     <div class="buttons">
       <button onclick="append('9')">9</button>
@@ -118,151 +113,177 @@
       <button onclick="calculate()">=</button>
       <button style="grid-column: span 2;" onclick="append('0')">0</button>
       <button onclick="append('.')">.</button>
-      <button onclick="append(',')">,</button>
       <button onclick="append('+')">+</button>
       <button onclick="append('-')">−</button>
       <button onclick="append('*')">×</button>
       <button onclick="append('/')">÷</button>
       <button onclick="append('^')">^</button>
+      <button onclick="append(',')">,</button>
       <button class="function" onclick="setFunction('log')">log</button>
       <button class="function" onclick="setFunction('ln')">ln</button>
       <button class="function" onclick="setFunction('sqrt')">√</button>
       <button class="function" onclick="setFunction('sin')">sin</button>
       <button class="function" onclick="setFunction('cos')">cos</button>
       <button class="function" onclick="setFunction('tan')">tan</button>
+      <button class="function" onclick="setFunction('nPr')">nPr</button>
+      <button class="function" onclick="setFunction('nCr')">nCr</button>
       <button class="function" onclick="solveQuadratic()">Quad</button>
+      <button onclick="switchPage()">Switch Page</button>
     </div>
-    <button onclick="switchPage()">Switch to Currency Exchange</button>
     <div class="history" id="history">
       <strong>History:</strong>
       <div id="historyContent"></div>
       <button onclick="clearHistory()">Clear History</button>
     </div>
   </div>
-
-  <!-- Currency Exchange Page -->
-  <div class="container secondary-page" id="currencyExchangePage">
-    <h2>Currency Exchange</h2>
-    <div>
-      <label for="amount">Amount:</label>
-      <input type="number" id="amount" placeholder="Enter amount">
+ <div id="secondaryPage" class="secondary-page">
+      <h3>Unit Conversion and Extra Features</h3>
+      <div>
+        <label>Pressure Conversion:</label>
+        <input type="number" id="pressureInput" placeholder="Enter value in Pa">
+        <button onclick="convertPressure()">Convert</button>
+        <div id="pressureResult"></div>
+      </div>
+      <div>
+        <label>Currency Conversion:</label>
+        <select id="currencyFrom">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="INR">INR</option>
+          <option value="GBP">GBP</option>
+          <option value="AUD">AUD</option>
+          <option value="CAD">CAD</option>
+        </select>
+        to
+        <select id="currencyTo">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="INR">INR</option>
+          <option value="GBP">GBP</option>
+          <option value="AUD">AUD</option>
+          <option value="CAD">CAD</option>
+        </select>
+        <input type="number" id="currencyInput" placeholder="Enter amount">
+        <button onclick="convertCurrency()">Convert</button>
+        <div id="currencyResult"></div>
+      </div>
     </div>
-    <div>
-      <label for="fromCurrency">From:</label>
-      <select id="fromCurrency">
-        <option value="INR">Indian Rupee (INR)</option>
-        <option value="USD">US Dollar (USD)</option>
-        <option value="BDT">Bangladeshi Taka (BDT)</option>
-      </select>
-    </div>
-    <div>
-      <label for="toCurrency">To:</label>
-      <select id="toCurrency">
-        <option value="USD">US Dollar (USD)</option>
-        <option value="INR">Indian Rupee (INR)</option>
-        <option value="BDT">Bangladeshi Taka (BDT)</option>
-      </select>
-    </div>
-    <button onclick="convertCurrency()">Convert</button>
-    <div id="conversionResult" style="margin-top: 20px; font-size: 1.2rem;"></div>
-    <button onclick="switchPage()">Switch to Calculator</button>
   </div>
-
   <footer>
-    <p>&copy; 2025 Enhanced Calculator. <a href="privacy.html">Privacy Policy</a></p>
+    <a href="privacy.html" target="_blank" style="text-decoration: none; color: #007BFF;">Privacy Policy</a>
+<a href="terms.html" target="_blank" style="text-decoration: none; color: #007BFF;">Terms and Condition</a>
+<a href="about.html" target="_blank" style="text-decoration: none; color: #007BFF;">About Us</a>
+<a href="contact.html" target="_blank" style="text-decoration: none; color: #007BFF;">Contact Us</a>
   </footer>
 
   <script>
-    const display = document.getElementById("display");
-    const historyContent = document.getElementById("historyContent");
-    const calculatorPage = document.getElementById("calculatorPage");
-    const currencyExchangePage = document.getElementById("currencyExchangePage");
+    let currentFunction = null;
+    const display = document.getElementById('display');
+    const historyContent = document.getElementById('historyContent');
 
     function append(value) {
       display.value += value;
     }
 
     function clearDisplay() {
-      display.value = "";
+      display.value = '';
+      currentFunction = null;
     }
 
     function erase() {
       display.value = display.value.slice(0, -1);
     }
 
+    function setFunction(func) {
+      currentFunction = func;
+      display.value = `${func}(`;
+    }
+
     function calculate() {
       try {
-        let result = math.evaluate(display.value.replace(/,/g, ""));
-        addToHistory(display.value + " = " + result);
-        display.value = result;
-      } catch (error) {
-        display.value = "Error";
+        let result;
+        if (currentFunction) {
+          const input = display.value.replace(`${currentFunction}(`, '').replace(')', '');
+          if (currentFunction === 'sin') result = math.sin(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'cos') result = math.cos(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'tan') result = math.tan(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'log') result = math.log10(parseFloat(input));
+          else if (currentFunction === 'ln') result = math.log(parseFloat(input));
+          else if (currentFunction === 'sqrt') result = math.sqrt(parseFloat(input));
+          else if (currentFunction === 'nPr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / math.factorial(n - r);
+          } else if (currentFunction === 'nCr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / (math.factorial(r) * math.factorial(n - r));
+          }
+          saveToHistory(`${currentFunction}(${input}) = ${result.toFixed(4)}`);
+          display.value = result.toFixed(4);
+          currentFunction = null;
+        } else {
+          result = math.evaluate(display.value);
+          saveToHistory(`${display.value} = ${result}`);
+          display.value = result;
+        }
+      } catch {
+        display.value = 'Error';
       }
     }
 
-    function addToHistory(entry) {
-      const div = document.createElement("div");
+    function solveQuadratic() {
+      const coeffs = display.value.split(',').map(Number);
+      const [a, b, c] = coeffs;
+      const d = b ** 2 - 4 * a * c;
+      if (d < 0) {
+        display.value = 'Imaginary Roots';
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = Imaginary Roots`);
+      } else {
+        const r1 = (-b + Math.sqrt(d)) / (2 * a);
+        const r2 = (-b - Math.sqrt(d)) / (2 * a);
+        const result = `Roots: ${r1.toFixed(2)}, ${r2.toFixed(2)}`;
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = ${result}`);
+        display.value = result;
+      }
+    }
+
+    function saveToHistory(entry) {
+      const div = document.createElement('div');
+      div.textContent = entry;
+      historyContent.appendChild(div);
+    }
+    
+function convertCurrency() {
+      const from = document.getElementById('currencyFrom').value;
+      const to = document.getElementById('currencyTo').value;
+      const amount = parseFloat(document.getElementById('currencyInput').value);
+
+      // Example rates (real rates should be fetched from an API)
+      const rates = {
+        USD: { EUR: 0.9, INR: 82, GBP: 0.75, AUD: 1.5, CAD: 1.35 },
+        EUR: { USD: 1.1, INR: 91, GBP: 0.83, AUD: 1.67, CAD: 1.5 },
+        INR: { USD: 0.012, EUR: 0.011, GBP: 0.0092, AUD: 0.018, CAD: 0.016 },
+        GBP: { USD: 1.33, EUR: 1.2, INR: 108, AUD: 2.02, CAD: 1.8 },
+        AUD: { USD: 0.67, EUR: 0.6, INR: 54, GBP: 0.5, CAD: 0.9 },
+        CAD: { USD: 0.74, EUR: 0.67, INR: 61, GBP: 0.56, AUD: 1.1 }
+      };
+
+      const rate = rates[from][to];
+      const convertedAmount = (amount * rate).toFixed(2);
+      document.getElementById('currencyResult').textContent = `${amount} ${from} = ${convertedAmount} ${to}`;
+    }
+
+    function saveToHistory(entry) {
+      const div = document.createElement('div');
       div.textContent = entry;
       historyContent.appendChild(div);
     }
 
     function clearHistory() {
-      historyContent.innerHTML = "";
-    }
-
-    function setFunction(func) {
-      if (func === "log" || func === "ln" || func === "sqrt" || func === "sin" || func === "cos" || func === "tan") {
-        display.value += `${func}(`;
-      }
-    }
-
-    function solveQuadratic() {
-      const coefficients = prompt("Enter coefficients a, b, c separated by commas (e.g., 1, -3, 2):");
-      if (!coefficients) return;
-      const [a, b, c] = coefficients.split(",").map(Number);
-      const discriminant = b ** 2 - 4 * a * c;
-      let solutions;
-
-      if (discriminant > 0) {
-        const root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-        const root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-        solutions = `Roots: ${root1}, ${root2}`;
-      } else if (discriminant === 0) {
-        const root = -b / (2 * a);
-        solutions = `Root: ${root}`;
-      } else {
-        solutions = "No real roots.";
-      }
-
-      alert(solutions);
-      addToHistory(`Quadratic: ${a}x² + ${b}x + ${c} → ${solutions}`);
+      historyContent.innerHTML = '';
     }
 
     function switchPage() {
-      calculatorPage.classList.toggle("active");
-      currencyExchangePage.classList.toggle("active");
-    }
-
-    function convertCurrency() {
-      const amount = parseFloat(document.getElementById("amount").value);
-      const fromCurrency = document.getElementById("fromCurrency").value;
-      const toCurrency = document.getElementById("toCurrency").value;
-
-      if (isNaN(amount)) {
-        alert("Please enter a valid amount.");
-        return;
-      }
-
-      // Simple conversion logic (replace with real API logic if needed)
-      const rates = {
-        INR: { USD: 0.012, BDT: 1.13 },
-        USD: { INR: 82.5, BDT: 93.3 },
-        BDT: { INR: 0.88, USD: 0.011 },
-      };
-
-      const rate = rates[fromCurrency][toCurrency];
-      const convertedAmount = (amount * rate).toFixed(2);
-      document.getElementById("conversionResult").textContent = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
+      document.getElementById('secondaryPage').classList.toggle('active');
     }
   </script>
 </body>
