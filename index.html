@@ -1,10 +1,9 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Scientific Calculator</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+  <title>Calculator with Currency Exchange</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,12 +46,6 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    button.function {
-      background-color: #17a2b8;
-    }
-    button.clear {
-      background-color: #dc3545;
-    }
     button:hover {
       background-color: #0056b3;
     }
@@ -62,181 +55,123 @@
     .secondary-page.active {
       display: block;
     }
-    .history {
-      margin-top: 20px;
-      padding: 10px;
-      background: #f9f9f9;
-      border-radius: 5px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
     footer {
       margin-top: 20px;
       text-align: center;
     }
   </style>
-
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2526583167218952"
-     crossorigin="anonymous"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTWHSD3JV5"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-KTWHSD3JV5');
-  </script>
-  <!-- Cookie Consent -->
-  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-  <script>
-    window.addEventListener('load', function () {
-      window.cookieconsent.initialise({
-        palette: {
-          popup: { background: "#000" },
-          button: { background: "#f1d600" }
-        },
-        theme: "classic",
-        position: "bottom-right",
-        content: {
-          message: "This site uses cookies to deliver services and analyze traffic.",
-          dismiss: "Got it!",
-          link: "Learn more",
-          href: "privacy.html"
-        }
-      });
-    });
-  </script>
 </head>
 <body>
   <div class="container">
-    <input type="text" id="display" class="display" readonly>
-    <div class="buttons">
-      <button onclick="append('9')">9</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('7')">7</button>
-      <button class="clear" onclick="clearDisplay()">C</button>
-      <button onclick="append('6')">6</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('4')">4</button>
-      <button onclick="erase()">Erase</button>
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button onclick="calculate()">=</button>
-      <button style="grid-column: span 2;" onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
-      <button onclick="append('+')">+</button>
-      <button onclick="append('-')">−</button>
-      <button onclick="append('*')">×</button>
-      <button onclick="append('/')">÷</button>
-      <button onclick="append('^')">^</button>
-      <button onclick="append(',')">,</button>
-      <button class="function" onclick="setFunction('log')">log</button>
-      <button class="function" onclick="setFunction('ln')">ln</button>
-      <button class="function" onclick="setFunction('sqrt')">√</button>
-      <button class="function" onclick="setFunction('sin')">sin</button>
-      <button class="function" onclick="setFunction('cos')">cos</button>
-      <button class="function" onclick="setFunction('tan')">tan</button>
-      <button class="function" onclick="setFunction('nPr')">nPr</button>
-      <button class="function" onclick="setFunction('nCr')">nCr</button>
-      <button class="function" onclick="solveQuadratic()">Quad</button>
-      <button onclick="switchPage()">Switch Page</button>
+    <!-- Main Calculator -->
+    <div id="mainPage" class="primary-page">
+      <input type="text" id="display" class="display" readonly>
+      <div class="buttons">
+        <button onclick="append('9')">9</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('7')">7</button>
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('4')">4</button>
+        <button onclick="erase()">Erase</button>
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="calculate()">=</button>
+        <button style="grid-column: span 2;" onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="switchPage()">Currency Exchange</button>
+      </div>
     </div>
-    <div class="history" id="history">
-      <strong>History:</strong>
-      <div id="historyContent"></div>
-      <button onclick="clearHistory()">Clear History</button>
+
+    <!-- Currency Exchange Page -->
+    <div id="secondaryPage" class="secondary-page">
+      <h3>Currency Exchange</h3>
+      <label for="amount">Enter Amount:</label>
+      <input type="number" id="amount" class="display">
+      <label for="fromCurrency">From:</label>
+      <select id="fromCurrency">
+        <option value="INR">INR</option>
+        <option value="USD">USD</option>
+        <option value="BDT">BDT</option>
+      </select>
+      <label for="toCurrency">To:</label>
+      <select id="toCurrency">
+        <option value="INR">INR</option>
+        <option value="USD">USD</option>
+        <option value="BDT">BDT</option>
+      </select>
+      <button onclick="convertCurrency()">Convert</button>
+      <div id="conversionResult" class="history"></div>
+      <button onclick="switchPage()">Back to Calculator</button>
     </div>
   </div>
 
   <footer>
-    <a href="privacy.html" target="_blank" style="text-decoration: none; color: #007BFF;">Privacy Policy</a>
+    <p>Enhanced Calculator with Currency Exchange</p>
   </footer>
 
   <script>
-    let currentFunction = null;
-    const display = document.getElementById('display');
-    const historyContent = document.getElementById('historyContent');
+    const exchangeRates = {
+      INR: { USD: 0.012, BDT: 1.16 },
+      USD: { INR: 83.00, BDT: 96.00 },
+      BDT: { INR: 0.86, USD: 0.010 },
+    };
 
     function append(value) {
+      const display = document.getElementById('display');
       display.value += value;
     }
 
     function clearDisplay() {
+      const display = document.getElementById('display');
       display.value = '';
-      currentFunction = null;
     }
 
     function erase() {
+      const display = document.getElementById('display');
       display.value = display.value.slice(0, -1);
     }
 
-    function setFunction(func) {
-      currentFunction = func;
-      display.value = `${func}(`;
-    }
-
     function calculate() {
+      const display = document.getElementById('display');
       try {
-        let result;
-        if (currentFunction) {
-          const input = display.value.replace(`${currentFunction}(`, '').replace(')', '');
-          if (currentFunction === 'sin') result = math.sin(math.unit(parseFloat(input), 'deg'));
-          else if (currentFunction === 'cos') result = math.cos(math.unit(parseFloat(input), 'deg'));
-          else if (currentFunction === 'tan') result = math.tan(math.unit(parseFloat(input), 'deg'));
-          else if (currentFunction === 'log') result = math.log10(parseFloat(input));
-          else if (currentFunction === 'ln') result = math.log(parseFloat(input));
-          else if (currentFunction === 'sqrt') result = math.sqrt(parseFloat(input));
-          else if (currentFunction === 'nPr') {
-            const [n, r] = input.split(',').map(Number);
-            result = math.factorial(n) / math.factorial(n - r);
-          } else if (currentFunction === 'nCr') {
-            const [n, r] = input.split(',').map(Number);
-            result = math.factorial(n) / (math.factorial(r) * math.factorial(n - r));
-          }
-          saveToHistory(`${currentFunction}(${input}) = ${result.toFixed(4)}`);
-          display.value = result.toFixed(4);
-          currentFunction = null;
-        } else {
-          result = math.evaluate(display.value);
-          saveToHistory(`${display.value} = ${result}`);
-          display.value = result;
-        }
+        display.value = eval(display.value);
       } catch {
         display.value = 'Error';
       }
     }
 
-    function solveQuadratic() {
-      const coeffs = display.value.split(',').map(Number);
-      const [a, b, c] = coeffs;
-      const d = b ** 2 - 4 * a * c;
-      if (d < 0) {
-        display.value = 'Imaginary Roots';
-        saveToHistory(`Quadratic(${coeffs.join(',')}) = Imaginary Roots`);
-      } else {
-        const r1 = (-b + Math.sqrt(d)) / (2 * a);
-        const r2 = (-b - Math.sqrt(d)) / (2 * a);
-        const result = `Roots: ${r1.toFixed(2)}, ${r2.toFixed(2)}`;
-        saveToHistory(`Quadratic(${coeffs.join(',')}) = ${result}`);
-        display.value = result;
-      }
-    }
-
     function switchPage() {
+      document.getElementById('mainPage').classList.toggle('active');
       document.getElementById('secondaryPage').classList.toggle('active');
     }
 
-    function saveToHistory(entry) {
-      const div = document.createElement('div');
-      div.textContent = entry;
-      historyContent.appendChild(div);
-    }
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const fromCurrency = document.getElementById('fromCurrency').value;
+      const toCurrency = document.getElementById('toCurrency').value;
+      const conversionResult = document.getElementById('conversionResult');
 
-    function clearHistory() {
-      historyContent.innerHTML = '';
+      if (isNaN(amount) || amount <= 0) {
+        conversionResult.textContent = 'Please enter a valid amount.';
+        return;
+      }
+
+      if (fromCurrency === toCurrency) {
+        conversionResult.textContent = `Converted Amount: ${amount.toFixed(2)} ${toCurrency}`;
+        return;
+      }
+
+      const rate = exchangeRates[fromCurrency][toCurrency];
+      if (!rate) {
+        conversionResult.textContent = 'Conversion rate not available.';
+        return;
+      }
+
+      const convertedAmount = amount * rate;
+      conversionResult.textContent = `Converted Amount: ${convertedAmount.toFixed(2)} ${toCurrency}`;
     }
   </script>
 </body>
