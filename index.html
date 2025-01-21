@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,9 +10,8 @@
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
       margin: 0;
     }
     .container {
@@ -71,21 +70,46 @@
       max-height: 150px;
       overflow-y: auto;
     }
+    footer {
+      margin-top: 20px;
+      text-align: center;
+    }
   </style>
-  <meta name="google-site-verification" content="CQRG5ICPmb5CFuSCWy0mF_Vi5u_Wr0jB3VBsNhOgLpI" />
-</head>
+
+  <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2526583167218952"
      crossorigin="anonymous"></script>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTWHSD3JV5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-KTWHSD3JV5');
-</script>
-  <body>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTWHSD3JV5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-KTWHSD3JV5');
+  </script>
+  <!-- Cookie Consent -->
+  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+  <script>
+    window.addEventListener('load', function () {
+      window.cookieconsent.initialise({
+        palette: {
+          popup: { background: "#000" },
+          button: { background: "#f1d600" }
+        },
+        theme: "classic",
+        position: "bottom-right",
+        content: {
+          message: "This site uses cookies to deliver services and analyze traffic.",
+          dismiss: "Got it!",
+          link: "Learn more",
+          href: "privacy.html"
+        }
+      });
+    });
+  </script>
+</head>
+<body>
   <div class="container">
     <input type="text" id="display" class="display" readonly>
     <div class="buttons">
@@ -108,7 +132,7 @@
       <button onclick="append('*')">×</button>
       <button onclick="append('/')">÷</button>
       <button onclick="append('^')">^</button>
-      <button onclick="append(',')">,</button> <!-- Comma -->
+      <button onclick="append(',')">,</button>
       <button class="function" onclick="setFunction('log')">log</button>
       <button class="function" onclick="setFunction('ln')">ln</button>
       <button class="function" onclick="setFunction('sqrt')">√</button>
@@ -126,38 +150,11 @@
       <button onclick="clearHistory()">Clear History</button>
     </div>
   </div>
-  <div id="secondaryPage" class="secondary-page">
-    <h3>Unit Conversion and Extra Features</h3>
-    <div>
-      <label>Pressure Conversion:</label>
-      <input type="number" id="pressureInput" placeholder="Enter value in Pa">
-      <button onclick="convertPressure()">Convert</button>
-      <div id="pressureResult"></div>
-    </div>
-    <div>
-      <label>Currency Conversion:</label>
-      <select id="currencyFrom">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="INR">INR</option>
-        <option value="GBP">GBP</option>
-        <option value="AUD">AUD</option>
-        <option value="CAD">CAD</option>
-      </select>
-      to
-      <select id="currencyTo">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="INR">INR</option>
-        <option value="GBP">GBP</option>
-        <option value="AUD">AUD</option>
-        <option value="CAD">CAD</option>
-      </select>
-      <input type="number" id="currencyInput" placeholder="Enter amount">
-      <button onclick="convertCurrency()">Convert</button>
-      <div id="currencyResult"></div>
-    </div>
-  </div>
+
+  <footer>
+    <a href="privacy.html" target="_blank" style="text-decoration: none; color: #007BFF;">Privacy Policy</a>
+  </footer>
+
   <script>
     let currentFunction = null;
     const display = document.getElementById('display');
