@@ -99,7 +99,8 @@
   </style>
 </head>
 <body>
-  <div class="container primary-page">
+  <!-- Calculator Page -->
+  <div class="container primary-page" id="calculatorPage">
     <h2>Scientific Calculator</h2>
     <input type="text" id="display" class="display" readonly>
     <div class="buttons">
@@ -131,11 +132,40 @@
       <button class="function" onclick="setFunction('tan')">tan</button>
       <button class="function" onclick="solveQuadratic()">Quad</button>
     </div>
+    <button onclick="switchPage()">Switch to Currency Exchange</button>
     <div class="history" id="history">
       <strong>History:</strong>
       <div id="historyContent"></div>
       <button onclick="clearHistory()">Clear History</button>
     </div>
+  </div>
+
+  <!-- Currency Exchange Page -->
+  <div class="container secondary-page" id="currencyExchangePage">
+    <h2>Currency Exchange</h2>
+    <div>
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" placeholder="Enter amount">
+    </div>
+    <div>
+      <label for="fromCurrency">From:</label>
+      <select id="fromCurrency">
+        <option value="INR">Indian Rupee (INR)</option>
+        <option value="USD">US Dollar (USD)</option>
+        <option value="BDT">Bangladeshi Taka (BDT)</option>
+      </select>
+    </div>
+    <div>
+      <label for="toCurrency">To:</label>
+      <select id="toCurrency">
+        <option value="USD">US Dollar (USD)</option>
+        <option value="INR">Indian Rupee (INR)</option>
+        <option value="BDT">Bangladeshi Taka (BDT)</option>
+      </select>
+    </div>
+    <button onclick="convertCurrency()">Convert</button>
+    <div id="conversionResult" style="margin-top: 20px; font-size: 1.2rem;"></div>
+    <button onclick="switchPage()">Switch to Calculator</button>
   </div>
 
   <footer>
@@ -145,6 +175,8 @@
   <script>
     const display = document.getElementById("display");
     const historyContent = document.getElementById("historyContent");
+    const calculatorPage = document.getElementById("calculatorPage");
+    const currencyExchangePage = document.getElementById("currencyExchangePage");
 
     function append(value) {
       display.value += value;
@@ -204,6 +236,33 @@
 
       alert(solutions);
       addToHistory(`Quadratic: ${a}x² + ${b}x + ${c} → ${solutions}`);
+    }
+
+    function switchPage() {
+      calculatorPage.classList.toggle("active");
+      currencyExchangePage.classList.toggle("active");
+    }
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const fromCurrency = document.getElementById("fromCurrency").value;
+      const toCurrency = document.getElementById("toCurrency").value;
+
+      if (isNaN(amount)) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      // Simple conversion logic (replace with real API logic if needed)
+      const rates = {
+        INR: { USD: 0.012, BDT: 1.13 },
+        USD: { INR: 82.5, BDT: 93.3 },
+        BDT: { INR: 0.88, USD: 0.011 },
+      };
+
+      const rate = rates[fromCurrency][toCurrency];
+      const convertedAmount = (amount * rate).toFixed(2);
+      document.getElementById("conversionResult").textContent = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
     }
   </script>
 </body>
