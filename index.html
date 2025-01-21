@@ -15,13 +15,13 @@
       margin: 0;
     }
     .container {
-      width: 90%; /* Changed from fixed width to a percentage for better responsiveness */
-      max-width: 500px; /* Ensures it doesn't grow too wide on large screens */
+      width: 90%;
+      max-width: 500px;
       background: #ffffff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      box-sizing: border-box; /* Ensures padding doesn't affect total width */
+      box-sizing: border-box;
     }
     .display {
       width: 100%;
@@ -76,19 +76,17 @@
       margin-top: 20px;
       text-align: center;
     }
-
-    /* Media Query for Smaller Screens */
     @media (max-width: 768px) {
       .container {
-        width: 95%; /* Ensures better fit on very small screens */
-        padding: 15px; /* Slightly reduced padding */
+        width: 95%;
+        padding: 15px;
       }
       button {
         padding: 10px;
-        font-size: 0.9rem; /* Slightly smaller button size */
+        font-size: 0.9rem;
       }
       .display {
-        font-size: 1.2rem; /* Smaller font for the display */
+        font-size: 1.2rem;
       }
     }
   </style>
@@ -118,16 +116,12 @@
       <button onclick="append('*')">×</button>
       <button onclick="append('/')">÷</button>
       <button onclick="append('^')">^</button>
-      <button onclick="append(',')">,</button>
       <button class="function" onclick="setFunction('log')">log</button>
       <button class="function" onclick="setFunction('ln')">ln</button>
       <button class="function" onclick="setFunction('sqrt')">√</button>
       <button class="function" onclick="setFunction('sin')">sin</button>
       <button class="function" onclick="setFunction('cos')">cos</button>
       <button class="function" onclick="setFunction('tan')">tan</button>
-      <button class="function" onclick="setFunction('nPr')">nPr</button>
-      <button class="function" onclick="setFunction('nCr')">nCr</button>
-      <button class="function" onclick="solveQuadratic()">Quad</button>
       <button onclick="switchPage()">Switch to Currency Exchange</button>
     </div>
     <div class="history" id="history">
@@ -170,8 +164,71 @@
   </footer>
 
   <script>
-    // JavaScript remains the same as in the previous version
-    // All functions for the calculator and currency exchange are intact
+    let display = document.getElementById("display");
+    let historyContent = document.getElementById("historyContent");
+    let currencyExchangePage = document.getElementById("currencyExchangePage");
+    let primaryPage = document.querySelector(".primary-page");
+
+    function append(value) {
+      display.value += value;
+    }
+
+    function clearDisplay() {
+      display.value = "";
+    }
+
+    function erase() {
+      display.value = display.value.slice(0, -1);
+    }
+
+    function calculate() {
+      try {
+        let result = math.evaluate(display.value);
+        addToHistory(display.value + " = " + result);
+        display.value = result;
+      } catch (error) {
+        display.value = "Error";
+      }
+    }
+
+    function addToHistory(entry) {
+      let div = document.createElement("div");
+      div.textContent = entry;
+      historyContent.appendChild(div);
+    }
+
+    function clearHistory() {
+      historyContent.innerHTML = "";
+    }
+
+    function setFunction(func) {
+      display.value += func + "(";
+    }
+
+    function switchPage() {
+      primaryPage.classList.toggle("active");
+      currencyExchangePage.classList.toggle("active");
+    }
+
+    function convertCurrency() {
+      let amount = parseFloat(document.getElementById("amount").value);
+      let fromCurrency = document.getElementById("fromCurrency").value;
+      let toCurrency = document.getElementById("toCurrency").value;
+
+      const rates = {
+        USD: { INR: 80, BDT: 105 },
+        INR: { USD: 0.0125, BDT: 1.31 },
+        BDT: { USD: 0.0095, INR: 0.76 }
+      };
+
+      if (isNaN(amount) || !rates[fromCurrency] || !rates[fromCurrency][toCurrency]) {
+        document.getElementById("conversionResult").textContent = "Invalid Input";
+        return;
+      }
+
+      let convertedAmount = amount * rates[fromCurrency][toCurrency];
+      document.getElementById("conversionResult").textContent = `${amount} ${fromCurrency} = ${convertedAmount.toFixed(2)} ${toCurrency}`;
+    }
   </script>
 </body>
 </html>
