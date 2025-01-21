@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculator with Currency Exchange</title>
+  <title>Enhanced Scientific Calculator with Currency Exchange</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,6 +47,12 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+    button.function {
+      background-color: #17a2b8;
+    }
+    button.clear {
+      background-color: #dc3545;
+    }
     button:hover {
       background-color: #0056b3;
     }
@@ -55,6 +62,14 @@
     .secondary-page.active {
       display: block;
     }
+    .history {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
     footer {
       margin-top: 20px;
       text-align: center;
@@ -63,14 +78,14 @@
 </head>
 <body>
   <div class="container">
-    <!-- Main Calculator -->
+    <!-- Main Calculator Page -->
     <div id="mainPage" class="primary-page">
       <input type="text" id="display" class="display" readonly>
       <div class="buttons">
         <button onclick="append('9')">9</button>
         <button onclick="append('8')">8</button>
         <button onclick="append('7')">7</button>
-        <button onclick="clearDisplay()">C</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
         <button onclick="append('6')">6</button>
         <button onclick="append('5')">5</button>
         <button onclick="append('4')">4</button>
@@ -81,7 +96,27 @@
         <button onclick="calculate()">=</button>
         <button style="grid-column: span 2;" onclick="append('0')">0</button>
         <button onclick="append('.')">.</button>
+        <button onclick="append('+')">+</button>
+        <button onclick="append('-')">−</button>
+        <button onclick="append('*')">×</button>
+        <button onclick="append('/')">÷</button>
+        <button onclick="append('^')">^</button>
+        <button onclick="append(',')">,</button>
+        <button class="function" onclick="setFunction('log')">log</button>
+        <button class="function" onclick="setFunction('ln')">ln</button>
+        <button class="function" onclick="setFunction('sqrt')">√</button>
+        <button class="function" onclick="setFunction('sin')">sin</button>
+        <button class="function" onclick="setFunction('cos')">cos</button>
+        <button class="function" onclick="setFunction('tan')">tan</button>
+        <button class="function" onclick="setFunction('nPr')">nPr</button>
+        <button class="function" onclick="setFunction('nCr')">nCr</button>
+        <button class="function" onclick="solveQuadratic()">Quad</button>
         <button onclick="switchPage()">Currency Exchange</button>
+      </div>
+      <div class="history" id="history">
+        <strong>History:</strong>
+        <div id="historyContent"></div>
+        <button onclick="clearHistory()">Clear History</button>
       </div>
     </div>
 
@@ -109,7 +144,7 @@
   </div>
 
   <footer>
-    <p>Enhanced Calculator with Currency Exchange</p>
+    <p>Enhanced Calculator with Scientific and Currency Exchange Features</p>
   </footer>
 
   <script>
@@ -137,42 +172,12 @@
     function calculate() {
       const display = document.getElementById('display');
       try {
-        display.value = eval(display.value);
+        display.value = math.evaluate(display.value);
       } catch {
         display.value = 'Error';
       }
     }
 
-    function switchPage() {
-      document.getElementById('mainPage').classList.toggle('active');
-      document.getElementById('secondaryPage').classList.toggle('active');
-    }
-
-    function convertCurrency() {
-      const amount = parseFloat(document.getElementById('amount').value);
-      const fromCurrency = document.getElementById('fromCurrency').value;
-      const toCurrency = document.getElementById('toCurrency').value;
-      const conversionResult = document.getElementById('conversionResult');
-
-      if (isNaN(amount) || amount <= 0) {
-        conversionResult.textContent = 'Please enter a valid amount.';
-        return;
-      }
-
-      if (fromCurrency === toCurrency) {
-        conversionResult.textContent = `Converted Amount: ${amount.toFixed(2)} ${toCurrency}`;
-        return;
-      }
-
-      const rate = exchangeRates[fromCurrency][toCurrency];
-      if (!rate) {
-        conversionResult.textContent = 'Conversion rate not available.';
-        return;
-      }
-
-      const convertedAmount = amount * rate;
-      conversionResult.textContent = `Converted Amount: ${convertedAmount.toFixed(2)} ${toCurrency}`;
-    }
-  </script>
-</body>
-</html>
+    function setFunction(func) {
+      const display = document.getElementById('display');
+      display.value = `${func}(`;
