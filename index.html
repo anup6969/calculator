@@ -47,6 +47,12 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+    button.function {
+      background-color: #17a2b8;
+    }
+    button.clear {
+      background-color: #dc3545;
+    }
     button:hover {
       background-color: #0056b3;
     }
@@ -56,6 +62,14 @@
     .secondary-page.active {
       display: block;
     }
+    .history {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
     footer {
       margin-top: 20px;
       text-align: center;
@@ -63,6 +77,7 @@
   </style>
 </head>
 <body>
+  <!-- Calculator Page -->
   <div class="container primary-page">
     <h2>Scientific Calculator</h2>
     <input type="text" id="display" class="display" readonly>
@@ -70,7 +85,7 @@
       <button onclick="append('9')">9</button>
       <button onclick="append('8')">8</button>
       <button onclick="append('7')">7</button>
-      <button onclick="clearDisplay()">C</button>
+      <button class="clear" onclick="clearDisplay()">C</button>
       <button onclick="append('6')">6</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('4')">4</button>
@@ -82,10 +97,30 @@
       <button style="grid-column: span 2;" onclick="append('0')">0</button>
       <button onclick="append('.')">.</button>
       <button onclick="append('+')">+</button>
+      <button onclick="append('-')">−</button>
+      <button onclick="append('*')">×</button>
+      <button onclick="append('/')">÷</button>
+      <button onclick="append('^')">^</button>
+      <button onclick="append(',')">,</button>
+      <button class="function" onclick="setFunction('log')">log</button>
+      <button class="function" onclick="setFunction('ln')">ln</button>
+      <button class="function" onclick="setFunction('sqrt')">√</button>
+      <button class="function" onclick="setFunction('sin')">sin</button>
+      <button class="function" onclick="setFunction('cos')">cos</button>
+      <button class="function" onclick="setFunction('tan')">tan</button>
+      <button class="function" onclick="setFunction('nPr')">nPr</button>
+      <button class="function" onclick="setFunction('nCr')">nCr</button>
+      <button class="function" onclick="solveQuadratic()">Quad</button>
       <button onclick="switchPage()">Switch to Currency Exchange</button>
+    </div>
+    <div class="history" id="history">
+      <strong>History:</strong>
+      <div id="historyContent"></div>
+      <button onclick="clearHistory()">Clear History</button>
     </div>
   </div>
 
+  <!-- Currency Exchange Page -->
   <div class="container secondary-page" id="currencyExchangePage">
     <h2>Currency Exchange</h2>
     <div>
@@ -118,26 +153,73 @@
   </footer>
 
   <script>
+    // Primary Page Functions
+    let currentFunction = null;
+    const display = document.getElementById('display');
+    const historyContent = document.getElementById('historyContent');
+
     function append(value) {
-      document.getElementById('display').value += value;
+      display.value += value;
     }
 
     function clearDisplay() {
-      document.getElementById('display').value = '';
+      display.value = '';
+      currentFunction = null;
     }
 
     function erase() {
-      const display = document.getElementById('display');
       display.value = display.value.slice(0, -1);
+    }
+
+    function setFunction(func) {
+      currentFunction = func;
+      display.value = `${func}(`;
     }
 
     function calculate() {
       try {
-        const display = document.getElementById('display');
-        const result = math.evaluate(display.value);
-        display.value = result;
+        let result;
+        if (currentFunction) {
+          const input = display.value.replace(`${currentFunction}(`, '').replace(')', '');
+          if (currentFunction === 'sin') result = math.sin(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'cos') result = math.cos(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'tan') result = math.tan(math.unit(parseFloat(input), 'deg'));
+          else if (currentFunction === 'log') result = math.log10(parseFloat(input));
+          else if (currentFunction === 'ln') result = math.log(parseFloat(input));
+          else if (currentFunction === 'sqrt') result = math.sqrt(parseFloat(input));
+          else if (currentFunction === 'nPr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / math.factorial(n - r);
+          } else if (currentFunction === 'nCr') {
+            const [n, r] = input.split(',').map(Number);
+            result = math.factorial(n) / (math.factorial(r) * math.factorial(n - r));
+          }
+          saveToHistory(`${currentFunction}(${input}) = ${result.toFixed(4)}`);
+          display.value = result.toFixed(4);
+          currentFunction = null;
+        } else {
+          result = math.evaluate(display.value);
+          saveToHistory(`${display.value} = ${result}`);
+          display.value = result;
+        }
       } catch {
-        document.getElementById('display').value = 'Error';
+        display.value = 'Error';
+      }
+    }
+
+    function solveQuadratic() {
+      const coeffs = display.value.split(',').map(Number);
+      const [a, b, c] = coeffs;
+      const d = b ** 2 - 4 * a * c;
+      if (d < 0) {
+        display.value = 'Imaginary Roots';
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = Imaginary Roots`);
+      } else {
+        const r1 = (-b + Math.sqrt(d)) / (2 * a);
+        const r2 = (-b - Math.sqrt(d)) / (2 * a);
+        const result = `Roots: ${r1.toFixed(2)}, ${r2.toFixed(2)}`;
+        saveToHistory(`Quadratic(${coeffs.join(',')}) = ${result}`);
+        display.value = result;
       }
     }
 
@@ -146,6 +228,17 @@
       document.getElementById('currencyExchangePage').classList.toggle('active');
     }
 
+    function saveToHistory(entry) {
+      const div = document.createElement('div');
+      div.textContent = entry;
+      historyContent.appendChild(div);
+    }
+
+    function clearHistory() {
+      historyContent.innerHTML = '';
+    }
+
+    // Currency Exchange Functions
     function convertCurrency() {
       const amount = parseFloat(document.getElementById('amount').value);
       const fromCurrency = document.getElementById('fromCurrency').value;
